@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 
 const AddPropertyModal=()=>{
     const [currentStep, setCurrentStep]= useState(1);
+    const [errors, setErrors]= useState<string[]>([]);
     const [dataCategory, setDataCategory] = useState('');
     const [dataTitle, setDataTitle] = useState('')
     const [dataDescription, setDataDescription] = useState('');
@@ -54,7 +55,7 @@ const AddPropertyModal=()=>{
             const formData = new FormData();
             formData.append('title', dataTitle);
             formData.append('description', dataDescription);
-            formData.append('price per night', dataPrice);
+            formData.append('price_per_night', dataPrice);
             formData.append('bedrooms', dataBedrooms);
             formData.append('bathrooms', dataBathrooms);
             formData.append('guests', dataGuests);
@@ -72,6 +73,12 @@ const AddPropertyModal=()=>{
                 addPropertyModal.close();
             } else{
                 console.log('Error');
+
+                const tmpErrors: string[] =Object.values(response).map((error: any) => {
+                    return error;
+                })
+
+                setErrors(tmpErrors)
             }
             
         }
@@ -235,6 +242,19 @@ const AddPropertyModal=()=>{
                         )}
                     </div>
 
+                    {errors.map((error, index) => {
+                        return(
+                            <div
+                                key={index}
+                                className='p-5 mb-4 bg-airbnb text-white rounded-xl opacity-80'
+
+                            >
+                                {error}
+
+                            </div>
+                        )  
+                    })}
+
                     <CustomButton
                         label="Previous"
                         className='mb-2 bg-blue-400 hover:bg-gray-800'
@@ -243,7 +263,7 @@ const AddPropertyModal=()=>{
                         
                         <CustomButton
                         label="Submit"
-                        onclick={() => console.log('yaaaaaa')} className={""}       
+                        onclick={submitForm} className={""}       
                         />
                 </>    
             )}

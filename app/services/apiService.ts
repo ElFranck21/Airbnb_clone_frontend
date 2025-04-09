@@ -1,16 +1,20 @@
 import { rejects } from "assert";
 import { resolve } from "path";
+import { getAccesToken } from "../lib/actions";
 
 const apiService = {
     get: async function(url: string): Promise<any> {
-        console.log('get', url)
+        console.log('get', url);
+
+        const token = await getAccesToken();
 
         return new Promise((resolve, reject)=>{
-            fetch(`${process.env.NEXT_PUBLIC_API_HOST}${url}`, {
+            fetch(`${process.env.NEXT_PUBLIC_API_HOST}/${url}`, {
                 method: 'GET',
                 headers:{
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 }
             })
             .then(response => response.json())
@@ -25,7 +29,34 @@ const apiService = {
         })
     },
     post: async function(url: string, data: any): Promise<any>{
-        console.log('que', url, data);
+        console.log('post', url, data);
+
+        const token = await getAccesToken();
+
+        return new Promise((resolve, reject)=>{
+            fetch(`${process.env.NEXT_PUBLIC_API_HOST}/${url}`, {
+                method:'POST',
+                body: data,
+                headers:{
+                    'Authorization': `Bearer ${token}`,
+                }
+            
+        })
+            .then(response => response.json())
+            .then((json)=>{
+                console.log('Response:', json);
+
+                resolve(json);
+            })
+            .catch((error=>{
+                reject(error);
+            }))
+        })
+    },
+
+    postWithoutToken: async function(url: string, data: any): Promise<any>{
+        console.log('post', url, data);
+
         return new Promise((resolve, reject)=>{
             fetch(`${process.env.NEXT_PUBLIC_API_HOST}/${url}`, {
                 method:'POST',
